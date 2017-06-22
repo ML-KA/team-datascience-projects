@@ -1,14 +1,11 @@
 import pandas as pd
 
-# Load files
-files = ["order_products__prior", "order_products__train",
-         "orders"]
-data = {}
-for f in files:
-    data[f] = pd.read_csv("./data/raw/" + f + ".csv", delimiter=',')
+from src.preprocessing.preprocessor import Preprocessor
 
-data["order_products"] = pd.concat([data["order_products__prior"], data["order_products__train"]])
-del data["order_products__prior"], data["order_products__train"]
+preprocessor = Preprocessor()
+# Load files
+files = ["orders", "order_products"]
+data = preprocessor.load_data(files)
 
 # Get orders and user_ids to predict (test)
 orders = data["orders"]
