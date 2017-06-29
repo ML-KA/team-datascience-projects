@@ -7,7 +7,7 @@ order of each user
 
 import pandas as pd
 
-orders = pd.read_csv("../data/raw/orders.csv")
+orders = pd.read_csv("../../data/raw/orders.csv")
 
 # Get users whose next reorders we want to predict
 test_orders = orders[orders["eval_set"] == "test"]
@@ -22,7 +22,7 @@ last_orders_indexes = orders_prior.groupby("user_id")["order_number"].idxmax()
 last_order_ids = orders_prior.loc[last_orders_indexes]["order_id"]
 
 # Products of the prior orders of users that we target for our prediction
-order_products = pd.read_csv("../data/raw/order_products__prior.csv")
+order_products = pd.read_csv("../../data/raw/order_products__prior.csv")
 last_order_products = order_products[order_products["order_id"].isin(
     last_order_ids)]
 
