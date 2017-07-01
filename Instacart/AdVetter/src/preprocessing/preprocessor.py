@@ -6,6 +6,38 @@ class Preprocessor(object):
     def __init__(self, data_path="./data"):
         self.path = data_path
 
+        self.dtypes = {
+            "order_products__prior": {
+                'order_id': np.int32,
+                'product_id': np.uint16,
+                'add_to_cart_order': np.int16,
+                'reordered': np.int8},
+            "order_products__train": {
+                'order_id': np.int32,
+                'product_id': np.uint16,
+                'add_to_cart_order': np.int16,
+                'reordered': np.int8},
+            "orders": {
+                'order_id': np.int32,
+                'user_id': np.int32,
+                'eval_set': 'category',
+                'order_number': np.int16,
+                'order_dow': np.int8,
+                'order_hour_of_day': np.int8,
+                'days_since_prior_order': np.float32},
+            "products": {
+                'product_id': np.uint16,
+                'order_id': np.int32,
+                'aisle_id': np.uint8,
+                'department_id': np.uint8},
+            "aisles": {
+                'aisle_id': np.uint8,
+                'aisle': str},
+            "departments": {
+                'department_id': np.uint8,
+                'department': str}
+        }
+
     def load_data_raw(self, files=["aisles", "departments", "order_products", "orders", "products"]):
         # Load both order_product files
         order_products = False
@@ -13,12 +45,15 @@ class Preprocessor(object):
             order_products = True
 
             files.remove("order_products")
-            files.append(["order_products__train", "order_products__prior"])
+            files.append("order_products__train")
+            files.append("order_products__prior")
 
         # Load files
         data = {}
         for f in files:
-            data[f] = pd.read_csv(self.path + "/raw/" + f + ".csv", delimiter=',')
+            data[f] = pd.read_csv(self.path + "/raw/" + f + ".csv", delimiter=',',
+                                  low_memory=True, engine='c', encoding="latin1",
+                                  dtype=self.dtypes[f])
 
         # Join both order_products files
         if order_products:
@@ -30,9 +65,9 @@ class Preprocessor(object):
     def load_data_master(self, usecols=None):
         # Define data types to save ram usage
         data_type = {"order_id": int, "user_id": int, "eval_set": str, "order_number": np.int16, "order_dow": np.int8,
-                 "order_hour_of_day": np.int8, "days_since_prior_order": np.float16, "product_id": np.float32,
-                 "add_to_cart_order": np.float16, "reordered": np.float16, "product_name": str, "aisle_id": np.float32,
-                 "department_id": np.float32, "aisle": str, "department": str}
+                     "order_hour_of_day": np.int8, "days_since_prior_order": np.float16, "product_id": np.float16,
+                     "add_to_cart_order": np.float16, "reordered": np.float16, "product_name": str, "aisle_id": np.float8,
+                     "department_id": np.float8, "aisle": str, "department": str}
         master = pd.read_csv(self.path + "/interim/master.csv", delimiter=',',
                              low_memory=True, engine='c', encoding="latin1",
                              dtype=data_type, usecols=usecols)
