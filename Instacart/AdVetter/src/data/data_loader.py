@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-class Preprocessor(object):
+class DataLoader(object):
     def __init__(self, data_path="./data"):
         self.path = data_path
 
@@ -38,31 +38,44 @@ class Preprocessor(object):
                 'department': str}
         }
 
-    def load_data_raw(self, files=["aisles", "departments", "order_products", "orders", "products"]):
-        # Load both order_product files
-        order_products = False
-        if "order_products" in files:
-            order_products = True
+    def load_raw_files(self, files=["aisles", "departments", "order_products", "orders", "products"]):
+        """
+        Loads all given files with correct dtypes into a dict.
+        Loads all files per default.
 
-            files.remove("order_products")
-            files.append("order_products__train")
-            files.append("order_products__prior")
+        :param files: list of files to load
+        :return: dict with data of files
+        """
 
-        # Load files
         data = {}
         for f in files:
-            data[f] = pd.read_csv(self.path + "/raw/" + f + ".csv", delimiter=',',
-                                  low_memory=True, engine='c', encoding="latin1",
-                                  dtype=self.dtypes[f])
-
-        # Join both order_products files
-        if order_products:
-            data["order_products"] = pd.concat([data["order_products__prior"], data["order_products__train"]])
-            del data["order_products__prior"], data["order_products__train"]
+            data[f] = self.load_raw_file(f)
 
         return data
 
-    def load_data_master(self, usecols=None):
+    def load_raw_file(self, file):
+        """
+        Loads given file with correct dtypes.
+
+        file = "order_products" returns a single concatenated DataFrame of "order_products__prior" and "order_products__test"
+
+        :param file: filename
+        :return: DataFrame of file content
+        """
+        # Load both order_product files
+        if file == "order_products":
+            prior = self.load_raw_file("order_products__prior")
+            train = self.load_raw_file("order_products__train")
+
+            return pd.concat([prior, train])
+
+        # Load file
+        data = pd.read_csv(self.path + "/raw/" + file + ".csv", delimiter=',',
+                           low_memory=True, engine='c', encoding="latin1",
+                           dtype=self.dtypes[file])
+        return data
+
+    def load_master_file(self, usecols=None):
         # Define data types to save ram usage
         data_type = {"order_id": int, "user_id": int, "eval_set": str, "order_number": np.int16, "order_dow": np.int8,
                      "order_hour_of_day": np.int8, "days_since_prior_order": np.float16, "product_id": np.float16,
@@ -74,8 +87,8 @@ class Preprocessor(object):
 
         return master
 
-    def create_master(self, data):
-        data = self.load_data_raw()
+    def create_master(self):
+        data = self.load_raw_files()
 
         # Join everything over orders
         master = pd.merge(data["orders"], data["order_products"], on="order_id", how="left")

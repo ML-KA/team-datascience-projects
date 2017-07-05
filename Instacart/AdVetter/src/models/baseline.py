@@ -1,11 +1,11 @@
 import pandas as pd
 
-from src.preprocessing.preprocessor import Preprocessor
+from data.data_loader import DataLoader
 
-preprocessor = Preprocessor()
+data_loader = DataLoader()
 # Load files
 files = ["orders", "order_products"]
-data = preprocessor.load_data(files)
+data = data_loader.load_data(files)
 
 # Get orders and user_ids to predict (test)
 orders = data["orders"]
