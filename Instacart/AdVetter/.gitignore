@@ -100,4 +100,4 @@ ENV/
 !/data/interim/.gitkeep
 !/data/preprocessed/.gitkeep
 !/data/raw/.gitkeep
-/submission.csv
+*submission.csv
