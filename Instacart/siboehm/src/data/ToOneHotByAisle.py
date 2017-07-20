@@ -5,7 +5,7 @@ from sklearn import preprocessing
 """
 Converts the data in the following way:
 1. Map individual products to their aisle, thereby reducing dimension of
-product-space from ~30.000 to 134
+product-space from ~50.000 to 134
 2. Flatten the data to the following structure:
 ---------------------------------------------------------------------------------------------
 user-id | # product orders of user from aisle 1 | # product orders of user from aisle 2 | ... | aisle 134

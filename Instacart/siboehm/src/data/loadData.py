@@ -29,6 +29,12 @@ class DataLoader(object):
             "reordered": np.int8,
             "product_id": np.int32
         },
+        "processed/order_products__train_clean": {
+            "order_id": np.int32,
+            "add_to_cart_order": np.int16,
+            "reordered": np.int8,
+            "product_id": np.int32
+        },
         "raw/orders": {
             "order_dow": np.int8,
             "order_hour_of_day": np.int8,
