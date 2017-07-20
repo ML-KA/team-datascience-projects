@@ -2,21 +2,34 @@ import pandas as pd
 import datetime
 from loadData import DataLoader
 from sklearn import preprocessing
+"""
+Converts the data in the following way:
+1. Map individual products to their aisle, thereby reducing dimension of
+product-space from ~50.000 to 134
+2. Flatten the data to the following structure:
+---------------------------------------------------------------------------------------------
+user-id | # product orders of user from aisle 1 | # product orders of user from aisle 2 | ... | aisle 134
+user-id | # product orders of user from aisle 1 | # product orders of user from aisle 2 | ... | aisle 134
+.
+.
+---------------------------------------------------------------------------------------------
+"""
 
 data = DataLoader().load_data(files=[
-    "order_products__train", "order_products__prior", "orders", "products"
+    "raw/order_products__train", "raw/order_products__prior", "raw/orders",
+    "raw/products"
 ])
 
 # Contains which user ordered which order + more info about the order
-orders = data["orders"]
+orders = data["raw/orders"]
 # Contains the product for each orders
 # Three orders for every user
-order_prod_p = data["order_products__prior"]
+order_prod_p = data["raw/order_products__prior"]
 # One order for every user, this order was made after the orders
 # in order_prod_p (target)
-order_prod_t = data["order_products__train"]
+order_prod_t = data["raw/order_products__train"]
 # Containing name, aisle and department of each product
-product_info = data["products"]
+product_info = data["raw/products"]
 
 
 # Warning, function is not side effect free

@@ -10,26 +10,32 @@ class DataLoader(object):
     # For the bigger files it makes sense to manually
     # set file type to reduce memory usage
     _types = {
-        "products": {
+        "raw/products": {
             "aisle_id": np.int8,
             "department_id": np.int8,
             "product_id": np.int32
         },
-        "aisles": {},
-        "departments": {},
-        "order_products__prior": {
+        "raw/aisles": {},
+        "raw/departments": {},
+        "raw/order_products__prior": {
             "order_id": np.int32,
             "add_to_cart_order": np.int16,
             "reordered": np.int8,
             "product_id": np.int32
         },
-        "order_products__train": {
+        "raw/order_products__train": {
             "order_id": np.int32,
             "add_to_cart_order": np.int16,
             "reordered": np.int8,
             "product_id": np.int32
         },
-        "orders": {
+        "processed/order_products__train_clean": {
+            "order_id": np.int32,
+            "add_to_cart_order": np.int16,
+            "reordered": np.int8,
+            "product_id": np.int32
+        },
+        "raw/orders": {
             "order_dow": np.int8,
             "order_hour_of_day": np.int8,
             "order_number": np.int16,
@@ -39,13 +45,14 @@ class DataLoader(object):
         }
     }
 
-    def __init__(self, data_path="../../data/raw/"):
+    def __init__(self, data_path="../../data/"):
         self.path = data_path
 
     def load_data(self,
                   files=[
-                      "aisles", "departments", "order_products__train",
-                      "order_products__prior", "orders", "products"
+                      "raw/aisles", "raw/departments",
+                      "raw/order_products__train", "raw/order_products__prior",
+                      "raw/orders", "raw/products"
                   ]):
         """
         Load the given files into memory,
@@ -57,11 +64,12 @@ class DataLoader(object):
             data[f] = pd.read_csv(self.path + f + ".csv", dtype=self._types[f])
         return data
 
-    def load_data_no_types(self,
-                           files=[
-                               "aisles", "departments", "order_products__train",
-                               "order_products__prior", "orders", "products"
-                           ]):
+    def load_data_no_types(
+            self,
+            files=[
+                "raw/aisles", "raw/departments", "raw/order_products__train",
+                "raw/order_products__prior", "raw/orders", "raw/products"
+            ]):
         """
         Load the given files into memory, without
         using smarter data types for the columns
